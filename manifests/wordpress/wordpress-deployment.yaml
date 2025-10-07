@@ -56,10 +56,35 @@ spec:
               key: mysql-password
         - name: WORDPRESS_TABLE_PREFIX
           value: ax_
+        - name: SMTP_HOST
+          value: smtp.gmail.com
+        - name: SMTP_PORT
+          value: "587"
+        - name: SMTP_USER
+          valueFrom:
+            secretKeyRef:
+              name: smtp-credentials
+              key: smtp-username
+        - name: SMTP_PASS
+          valueFrom:
+            secretKeyRef:
+              name: smtp-credentials
+              key: smtp-password
         - name: WORDPRESS_CONFIG_EXTRA
           value: |
             define( 'WP_HOME', 'https://usemirai.site' );
             define( 'WP_SITEURL', 'https://usemirai.site' );
+            define( 'WPMS_ON', true );
+            define( 'WPMS_SMTP_AUTH', true );
+            define( 'WPMS_SMTP_AUTO_TLS', false );
+            define( 'WPMS_MAILER', 'smtp' );
+            define( 'WPMS_SMTP_HOST', getenv( 'SMTP_HOST' ) );
+            define( 'WPMS_SMTP_PORT', getenv( 'SMTP_PORT' ) );
+            define( 'WPMS_SMTP_USERNAME', getenv( 'SMTP_USER' ) );
+            define( 'WPMS_SMTP_PASSWORD', getenv( 'SMTP_PASS' ) );
+            define( 'WPMS_MAIL_FROM', getenv( 'SMTP_USER' ) );
+            define( 'WPMS_MAIL_FROM_FORCE', true );
+            define( 'WPMS_SMTP_ENCRYPTION', 'tls' );
         volumeMounts:
         - name: wordpress-content
           mountPath: /var/www/html/wp-content
