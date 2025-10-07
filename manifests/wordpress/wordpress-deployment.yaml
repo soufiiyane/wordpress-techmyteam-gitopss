@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress
+  namespace: wordpress
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wordpress
+  template:
+    metadata:
+      labels:
+        app: wordpress
+    spec:
+      initContainers:
+      - name: init-wordpress-content
+        image: soufiiyane/tmt-wordpress:latest
+        command:
+        - sh
+        - -c
+        - |
+          if [ -z "$(find /seed -mindepth 1 ! -name 'lost+found' -print -quit)" ]; then
+            echo "wp-content empty; seeding from image."
+            cp -a /var/www/html/wp-content/. /seed/
+            chown -R www-data:www-data /seed
+          else
+            echo "wp-content already populated; skipping seed."
+          fi
+        volumeMounts:
+        - name: wordpress-content
+          mountPath: /seed
+      containers:
+      - name: wordpress
+        image: soufiiyane/tmt-wordpress:latest
+        ports:
+        - containerPort: 80
+          name: http
+        env:
+        - name: WORDPRESS_DB_HOST
+          value: mysql.wordpress.svc.cluster.local:3306
+        - name: WORDPRESS_DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: mysql-credentials
+              key: mysql-database
+        - name: WORDPRESS_DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: mysql-credentials
+              key: mysql-user
+        - name: WORDPRESS_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-credentials
+              key: mysql-password
+        - name: WORDPRESS_TABLE_PREFIX
+          value: ax_
+        - name: WORDPRESS_CONFIG_EXTRA
+          value: |
+            define( 'WP_HOME', 'https://usemirai.site' );
+            define( 'WP_SITEURL', 'https://usemirai.site' );
+        volumeMounts:
+        - name: wordpress-content
+          mountPath: /var/www/html/wp-content
+      volumes:
+      - name: wordpress-content
+        persistentVolumeClaim:
+          claimName: wordpress-uploads
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wordpress
+  namespace: wordpress
+spec:
+  selector:
+    app: wordpress
+  ports:
+  - port: 80
+    targetPort: http
