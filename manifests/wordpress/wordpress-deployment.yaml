@@ -85,6 +85,14 @@ spec:
             define( 'WPMS_MAIL_FROM', getenv( 'SMTP_USER' ) );
             define( 'WPMS_MAIL_FROM_FORCE', true );
             define( 'WPMS_SMTP_ENCRYPTION', 'tls' );
+            define('AUTH_KEY',         'WPv,cxFv.4THhZwnNerhy]sO(=82w4_o?=TYaZ6wxJBcl${~qBk_S%K20z|>EIK^');
+            define('SECURE_AUTH_KEY',  '-m*/z!5(Kdvcl3P+! q[t?WUUC]i|LMh:gs8L>s[`~XL7~x)M^s%)V_ezxJ.zP;d');
+            define('LOGGED_IN_KEY',    'mv|#yP+-]$L#d-xT.fiBU>])p&>jqT@hn:ld>N(^}2rIi~K6@s`?v3S}<TS1D#q}');
+            define('NONCE_KEY',        'g,ev[V=nRO+q=N.J+[[PBvH+%N@nMiDu/|dLE4z8[#sf5Q7t+| }o220=@_wZrho');
+            define('AUTH_SALT',        'p^SU]=tSgt+[*gq: /q:;w5%B+=PC6VG(Xb]|*o+4PzY1qHZ^BM]D9)TbVp{4Pci');
+            define('SECURE_AUTH_SALT', 'M=>[]gMuS.=b{XrH5Q6>pvG5o%)<h%9Wrp94MI7gF5}s7iUV@54eYE6ry{h?Vf|W');
+            define('LOGGED_IN_SALT',   'QRROx/wu{[EX/g(vv-@oE.4[BNB7AQ+,X( 3Vwipl-s^B]X|KUvvw+AZi`)+sxhs');
+            define('NONCE_SALT',       '-i8^T+IyT,>YXRc`~`|y>G^|c3_R9]fvKP]r#i;N*k#$kWaRS^TDJaKO*L&{?D_5');
         volumeMounts:
         - name: wordpress-content
           mountPath: /var/www/html/wp-content
